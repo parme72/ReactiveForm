@@ -18,9 +18,11 @@ var CustomerComponent = (function () {
     }
     CustomerComponent.prototype.ngOnInit = function () {
         this.customerForm = this.fb.group({
-            firstName: '',
-            lastName: '',
-            email: '',
+            firstName: ['', [forms_1.Validators.required, forms_1.Validators.minLength(3)]],
+            lastName: ['', [forms_1.Validators.required, forms_1.Validators.minLength(50)]],
+            email: ['', [forms_1.Validators.required, forms_1.Validators.pattern('[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+')]],
+            phone: '',
+            notification: 'email',
             sendCatalog: true
         });
     };
@@ -35,6 +37,16 @@ var CustomerComponent = (function () {
     CustomerComponent.prototype.save = function () {
         console.log(this.customerForm);
         console.log('Saved: ' + JSON.stringify(this.customerForm.value));
+    };
+    CustomerComponent.prototype.setNotification = function (notifyVia) {
+        var phoneConstrol = this.customerForm.get('phone');
+        if (notifyVia === 'text') {
+            phoneConstrol.setValidators(forms_1.Validators.required);
+        }
+        else {
+            phoneConstrol.clearValidators();
+        }
+        phoneConstrol.updateValueAndValidity();
     };
     return CustomerComponent;
 }());
