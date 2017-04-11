@@ -9,8 +9,24 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require("@angular/core");
-var customer_1 = require("./customer");
 var forms_1 = require("@angular/forms");
+var customer_1 = require("./customer");
+function ratingRange(c) {
+    if (c.value !== undefined && (isNaN(c.value) || c.value < 1 || c.value > 5)) {
+        return { 'range': true };
+    }
+    ;
+    return null;
+}
+function ratingRange2(min, max) {
+    return function (c) {
+        if (c.value !== undefined && (isNaN(c.value) || c.value < min || c.value > max)) {
+            return { 'range': true };
+        }
+        ;
+        return null;
+    };
+}
 var CustomerComponent = (function () {
     function CustomerComponent(fb) {
         this.fb = fb;
@@ -19,34 +35,36 @@ var CustomerComponent = (function () {
     CustomerComponent.prototype.ngOnInit = function () {
         this.customerForm = this.fb.group({
             firstName: ['', [forms_1.Validators.required, forms_1.Validators.minLength(3)]],
-            lastName: ['', [forms_1.Validators.required, forms_1.Validators.minLength(50)]],
-            email: ['', [forms_1.Validators.required, forms_1.Validators.pattern('[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+')]],
+            lastName: ['', forms_1.Validators.required, forms_1.Validators.minLength(50)],
+            email: ['', forms_1.Validators.required, forms_1.Validators.pattern('[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+')],
             phone: '',
             notification: 'email',
-            sendCatalog: true
-        });
-    };
-    CustomerComponent.prototype.populateTestData = function () {
-        this.customerForm.patchValue({
-            firstName: "Jack",
-            lastName: "Huge",
-            //email: "test@server.com",
+            rating: ['', ratingRange2(1, 5)],
+            //rating: ['', ratingRange],
             sendCatalog: true
         });
     };
     CustomerComponent.prototype.save = function () {
         console.log(this.customerForm);
-        console.log('Saved: ' + JSON.stringify(this.customerForm.value));
+        console.log('Saved: ' + JSON.stringify(this.customerForm));
+    };
+    CustomerComponent.prototype.populateTestData = function () {
+        this.customerForm.patchValue({
+            firstName: 'Jack',
+            lastName: 'Hardness',
+            //email: 'jack@hardness.com',
+            sendCatalog: false
+        });
     };
     CustomerComponent.prototype.setNotification = function (notifyVia) {
-        var phoneConstrol = this.customerForm.get('phone');
+        var phoneControl = this.customerForm.get('phone');
         if (notifyVia === 'text') {
-            phoneConstrol.setValidators(forms_1.Validators.required);
+            phoneControl.setValidators(forms_1.Validators.required);
         }
         else {
-            phoneConstrol.clearValidators();
+            phoneControl.clearValidators();
         }
-        phoneConstrol.updateValueAndValidity();
+        phoneControl.updateValueAndValidity();
     };
     return CustomerComponent;
 }());
